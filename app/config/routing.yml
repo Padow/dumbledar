@@ -1,0 +1,14 @@
+rest_dumbledar_api:
+    resource: "@RestDumbledarApiBundle/Controller/"
+    prefix: /
+    type:     annotation
+
+calendar:
+    type:   rest
+    prefix: /rest
+    resource:   Rest\DumbledarApiBundle\Controller\calendarRestController
+
+event:
+    type:   rest
+    prefix: /rest
+    resource:   Rest\DumbledarApiBundle\Controller\eventRestController
