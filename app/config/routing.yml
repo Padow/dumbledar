@@ -12,3 +12,7 @@ event:
     type:   rest
     prefix: /rest
     resource:   Rest\DumbledarApiBundle\Controller\eventRestController
+
+NelmioApiDocBundle:
+    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+    prefix:   /api/doc

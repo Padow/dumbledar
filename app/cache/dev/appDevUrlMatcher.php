@@ -254,6 +254,17 @@ class appDevUrlMatcher extends Symfony\Bundle\FrameworkBundle\Routing\Redirectab
             }
             not_event_new:
 
+            // event_show
+            if (preg_match('#^/event/(?P<id>[^/]++)$#s', $pathinfo, $matches)) {
+                if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
+                    $allow = array_merge($allow, array('GET', 'HEAD'));
+                    goto not_event_show;
+                }
+
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'event_show')), array (  '_controller' => 'Rest\\DumbledarApiBundle\\Controller\\eventController::showAction',));
+            }
+            not_event_show:
+
             // event_edit
             if (preg_match('#^/event/(?P<id>[^/]++)/edit$#s', $pathinfo, $matches)) {
                 if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
@@ -289,68 +300,88 @@ class appDevUrlMatcher extends Symfony\Bundle\FrameworkBundle\Routing\Redirectab
 
         }
 
-        // rest_dumbledarapi_eventrest_showevents
-        if (preg_match('#^/(?P<id>[^/]++)$#s', $pathinfo, $matches)) {
-            if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
-                $allow = array_merge($allow, array('GET', 'HEAD'));
-                goto not_rest_dumbledarapi_eventrest_showevents;
-            }
-
-            return $this->mergeDefaults(array_replace($matches, array('_route' => 'rest_dumbledarapi_eventrest_showevents')), array (  '_controller' => 'Rest\\DumbledarApiBundle\\Controller\\eventRestController::showEventsAction',));
-        }
-        not_rest_dumbledarapi_eventrest_showevents:
-
-        // event_show
-        if (preg_match('#^/(?P<id>[^/]++)$#s', $pathinfo, $matches)) {
-            return $this->mergeDefaults(array_replace($matches, array('_route' => 'event_show')), array (  '_controller' => 'Rest\\DumbledarApiBundle\\Controller\\eventRestController::showEventsAction',));
-        }
-
         if (0 === strpos($pathinfo, '/rest')) {
             // get_calendars
-            if (0 === strpos($pathinfo, '/rest/calendars') && preg_match('#^/rest/calendars(?:\\.(?P<_format>xml|json|html))?$#s', $pathinfo, $matches)) {
+            if ($pathinfo === '/rest/calendars') {
                 if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
                     $allow = array_merge($allow, array('GET', 'HEAD'));
                     goto not_get_calendars;
                 }
 
-                return $this->mergeDefaults(array_replace($matches, array('_route' => 'get_calendars')), array (  '_controller' => 'Rest\\DumbledarApiBundle\\Controller\\calendarRestController::getCalendarsAction',  '_format' => 'json',));
+                return array (  '_controller' => 'Rest\\DumbledarApiBundle\\Controller\\calendarRestController::getCalendarsAction',  '_format' => 'json',  '_route' => 'get_calendars',);
             }
             not_get_calendars:
 
-            // show_events
-            if (preg_match('#^/rest/(?P<id>[^/\\.]++)(?:\\.(?P<_format>xml|json|html))?$#s', $pathinfo, $matches)) {
-                if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
-                    $allow = array_merge($allow, array('GET', 'HEAD'));
-                    goto not_show_events;
-                }
-
-                return $this->mergeDefaults(array_replace($matches, array('_route' => 'show_events')), array (  '_controller' => 'Rest\\DumbledarApiBundle\\Controller\\eventRestController::showEventsAction',  '_format' => 'json',));
-            }
-            not_show_events:
-
-            // get_events
-            if (0 === strpos($pathinfo, '/rest/events') && preg_match('#^/rest/events(?:\\.(?P<_format>xml|json|html))?$#s', $pathinfo, $matches)) {
-                if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
-                    $allow = array_merge($allow, array('GET', 'HEAD'));
-                    goto not_get_events;
-                }
-
-                return $this->mergeDefaults(array_replace($matches, array('_route' => 'get_events')), array (  '_controller' => 'Rest\\DumbledarApiBundle\\Controller\\eventRestController::getEventsAction',  '_format' => 'json',));
-            }
-            not_get_events:
-
             // get_user
-            if (0 === strpos($pathinfo, '/rest/users') && preg_match('#^/rest/users/(?P<event>[^/\\.]++)(?:\\.(?P<_format>xml|json|html))?$#s', $pathinfo, $matches)) {
+            if (0 === strpos($pathinfo, '/rest/users') && preg_match('#^/rest/users/(?P<calendar>[^/]++)$#s', $pathinfo, $matches)) {
                 if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
                     $allow = array_merge($allow, array('GET', 'HEAD'));
                     goto not_get_user;
                 }
 
-                return $this->mergeDefaults(array_replace($matches, array('_route' => 'get_user')), array (  '_controller' => 'Rest\\DumbledarApiBundle\\Controller\\eventRestController::getUserAction',  '_format' => 'json',));
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'get_user')), array (  '_controller' => 'Rest\\DumbledarApiBundle\\Controller\\calendarRestController::getUserAction',  '_format' => 'json',));
             }
             not_get_user:
 
+            // delete
+            if (preg_match('#^/rest/(?P<id>[^/]++)$#s', $pathinfo, $matches)) {
+                if ($this->context->getMethod() != 'DELETE') {
+                    $allow[] = 'DELETE';
+                    goto not_delete;
+                }
+
+                return $this->mergeDefaults(array_replace($matches, array('_route' => 'delete')), array (  '_controller' => 'Rest\\DumbledarApiBundle\\Controller\\eventRestController::deleteAction',  '_format' => 'json',));
+            }
+            not_delete:
+
+            if (0 === strpos($pathinfo, '/rest/events')) {
+                // get_events
+                if ($pathinfo === '/rest/events') {
+                    if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
+                        $allow = array_merge($allow, array('GET', 'HEAD'));
+                        goto not_get_events;
+                    }
+
+                    return array (  '_controller' => 'Rest\\DumbledarApiBundle\\Controller\\eventRestController::getEventsAction',  '_format' => 'json',  '_route' => 'get_events',);
+                }
+                not_get_events:
+
+                // get_event
+                if (preg_match('#^/rest/events/(?P<id>[^/]++)$#s', $pathinfo, $matches)) {
+                    if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
+                        $allow = array_merge($allow, array('GET', 'HEAD'));
+                        goto not_get_event;
+                    }
+
+                    return $this->mergeDefaults(array_replace($matches, array('_route' => 'get_event')), array (  '_controller' => 'Rest\\DumbledarApiBundle\\Controller\\eventRestController::getEventAction',  '_format' => 'json',));
+                }
+                not_get_event:
+
+                // post_event
+                if ($pathinfo === '/rest/events') {
+                    if ($this->context->getMethod() != 'POST') {
+                        $allow[] = 'POST';
+                        goto not_post_event;
+                    }
+
+                    return array (  '_controller' => 'Rest\\DumbledarApiBundle\\Controller\\eventRestController::postEventAction',  '_format' => 'json',  '_route' => 'post_event',);
+                }
+                not_post_event:
+
+            }
+
         }
+
+        // nelmio_api_doc_index
+        if (0 === strpos($pathinfo, '/api/doc') && preg_match('#^/api/doc(?:/(?P<view>[^/]++))?$#s', $pathinfo, $matches)) {
+            if (!in_array($this->context->getMethod(), array('GET', 'HEAD'))) {
+                $allow = array_merge($allow, array('GET', 'HEAD'));
+                goto not_nelmio_api_doc_index;
+            }
+
+            return $this->mergeDefaults(array_replace($matches, array('_route' => 'nelmio_api_doc_index')), array (  '_controller' => 'Nelmio\\ApiDocBundle\\Controller\\ApiDocController::indexAction',  'view' => 'default',));
+        }
+        not_nelmio_api_doc_index:
 
         throw 0 < count($allow) ? new MethodNotAllowedException(array_unique($allow)) : new ResourceNotFoundException();
     }

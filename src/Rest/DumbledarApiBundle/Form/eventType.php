@@ -30,7 +30,8 @@ class eventType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Rest\DumbledarApiBundle\Entity\event'
+            'data_class' => 'Rest\DumbledarApiBundle\Entity\event',
+            'csrf_protection' => false
         ));
     }
 
