@@ -14,7 +14,7 @@ git clone https://github.com/Padow/dumbledar.git
 Go in your project directory and download Composer :
 
 ```sh
-curl -s https://getcomposer.org/installer | php
+curl -sS https://getcomposer.org/installer | php
 ```
 
 then simply run this command :
