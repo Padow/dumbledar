@@ -18,7 +18,7 @@ class AppKernel extends Kernel
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new FOS\RestBundle\FOSRestBundle(),
-            new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
+            //new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
             new Rest\DumbledarApiBundle\RestDumbledarApiBundle(),
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
         );
